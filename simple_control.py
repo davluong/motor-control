@@ -11,15 +11,15 @@ GPIO.setup(4, GPIO.OUT) #motor 4
 
 pygame.init()
 
-m1 = GPIO.PWM(4, 1)
-m2 = GPIO.PWM(17, 1)
-m3 = GPIO.PWM(27, 1)
-m4 = GPIO.PWM(22, 1)
+m1 = GPIO.PWM(22, 1000000)
+m2 = GPIO.PWM(17, 1000000)
+m3 = GPIO.PWM(27, 1000000)
+m4 = GPIO.PWM(4, 1000000)
 
-m1.start(50)
-m2.start(50)
-m3.start(50)
-m4.start(50)
+m1.start(0)
+m2.start(0)
+m3.start(0)
+m4.start(0)
 
 j = pygame.joystick.Joystick(0)
 j.init()
@@ -106,14 +106,14 @@ try:
         if back_motors_enabled == True:
             s3 = 51
             s4 = 51
-            m3.ChangeDutyCycle(50) #allows balloon to hover
-            m4.ChangeDutyCycle(50)
+            m3.ChangeDutyCycle(0) #allows balloon to hover
+            m4.ChangeDutyCycle(0)
             m1.ChangeDutyCycle(val_1)
             m2.ChangeDutyCycle(val_2)
             s1 = val_1
             s2 = val_2
 
-        if front_motors_enabled == True:
+        if side_motors_enabled == True:
             s1 = 0
             s2 = 0
             m1.ChangeDutyCycle(0)
@@ -138,9 +138,9 @@ try:
                             back_motors_enabled = True
                             side_motors_enabled = False
 
-                    elif j.get_button():
+                    elif j.get_button(3):
                         print("L1 Pressed, now press R1")
-                        if j.get_button():
+                        if j.get_button(4):
                             print("Side Motors Control Enabled")
                             side_motors_enabled = True
                             back_motors_enabled = False
@@ -165,28 +165,28 @@ try:
                         print('Disengaging...')
 
                       
-            #print('Motor Speeds: M1 = %s%%, M2 = %s%%, M3 = %s%%, M4 = %s%%' % (s1, s2, s3, s4))
+        print('Motor Speeds: M1 = %s%%, M2 = %s%%, M3 = %s%%, M4 = %s%%' % (s1, s2, s3, s4))
             #logic check
 
-            if s1 >= 100 and s2 >= 100:
-                dir1 = 'is going forward'
-            elif s1 > s2:
-                dir1 = 'is turning right'
-            elif s2 > s1:
-                dir1 = 'is turning left'
-            else:
-                dir1 = 'is not moving in the lateral direction'
+        if s1 >= 100 and s2 >= 100:
+            dir1 = 'is going forward'
+        elif s1 > s2:
+            dir1 = 'is turning right'
+        elif s2 > s1:
+            dir1 = 'is turning left'
+        else:
+            dir1 = 'is not moving in the lateral direction'
 
-            if s3 > 51:
-                dir2 = 'is going up'
-            elif s3 == 51:
-                dir2 = 'is keeping steady'
-            else:
-                dir2 = 'is going down'
+        if s3 > 51:
+            dir2 = 'is going up'
+        elif s3 == 51:
+            dir2 = 'is keeping steady'
+        else:
+            dir2 = 'is going down'
 
-            print('The balloon %s and %s.' % (dir1, dir2))
+        print('The balloon %s and %s.' % (dir1, dir2))
 
-            time.sleep(1)
+        time.sleep(1)
 
 except KeyboardInterrupt:
     print("EXITING NOW")
