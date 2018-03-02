@@ -4,10 +4,10 @@ import datetime
 import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(4, GPIO.OUT) #motor 1
-GPIO.setup(17, GPIO.OUT) #motor 2
+GPIO.setup(17, GPIO.OUT) #motor 1
+GPIO.setup(22, GPIO.OUT) #motor 2
 GPIO.setup(27, GPIO.OUT) #motor 3
-GPIO.setup(22, GPIO.OUT) #motor 4
+GPIO.setup(4, GPIO.OUT) #motor 4
 
 pygame.init()
 
