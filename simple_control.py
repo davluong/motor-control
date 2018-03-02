@@ -34,6 +34,8 @@ s3 = 0
 s4 = 0
 val_1 = 0
 val_2 = 0
+back_motors_enabled = False
+side_motors_enabled = False
 
 try:
     while True:
@@ -100,40 +102,54 @@ try:
             val_2 = 0
 
         print("{Left Pointer: %s} {Right Pointer: %s}" % (left_dir, r_dir))
+
+        if back_motors_enabled == True:
+            s3 = 51
+            s4 = 51
+            m3.ChangeDutyCycle(50) #allows balloon to hover
+            m4.ChangeDutyCycle(50)
+            m1.ChangeDutyCycle(val_1)
+            m2.ChangeDutyCycle(val_2)
+            s1 = val_1
+            s2 = val_2
+
+        if front_motors_enabled == True:
+            s1 = 0
+            s2 = 0
+            m1.ChangeDutyCycle(0)
+            m2.ChangeDutyCycle(0)
+            #use only the left analog stick for this
+            if val_1 <= 0:
+                val_1 += 20
+            if val_1 >= 100:
+                val_1 = 90
+            m3.ChangeDutyCycle(val_1)
+            m4.ChangeDutyCycle(val_1)
+            s3 = val_1
+            s4 = s3
         
         for event in events:
             if event.type == pygame.JOYBUTTONDOWN:
                 if hover == False:
                     if j.get_button(6):
-                        print("L2 Pressed, now go forward") #back motor 1
-                        s3 = 51
-                        s4 = 51
-                        m3.ChangeDutyCycle(50) #allows balloon to hover
-                        m4.ChangeDutyCycle(50)
-                        m1.ChangeDutyCycle(val_1)
-                        m2.ChangeDutyCycle(val_2)
-                        s1 = val_1
-                        s2 = val_2
+                        print("L2 Pressed, now press R2")
+                        if j.get_button(7):
+                            print("Back Motor Control Enabled")
+                            back_motors_enabled = True
+                            side_motors_enabled = False
 
-                    elif j.get_button(7):
-                        print("R2 Pressed, now move up/down")
-                        s1 = 0
-                        s2 = 0
-                        m1.ChangeDutyCycle(0)
-                        m2.ChangeDutyCycle(0)
-                        #use only the left analog stick for this
-                        if val_1 <= 0:
-                            val_1 += 20
-                        if val_1 >= 100:
-                            val_1 = 90
-                        m3.ChangeDutyCycle(val_1)
-                        m4.ChangeDutyCycle(val_1)
-                        s3 = val_1
-                        s4 = s3
+                    elif j.get_button():
+                        print("L1 Pressed, now press R1")
+                        if j.get_button():
+                            print("Side Motors Control Enabled")
+                            side_motors_enabled = True
+                            back_motors_enabled = False
                         
                 if j.get_button(3): #if the triangle button is pressed
                     if hover == False:
                         hover = True
+                        back_motors_enabled = False
+                        side_motors_enabled = False
                         print('Entering Hover Mode...')
                         m1.ChangeDutyCycle(0)
                         m2.ChangeDutyCycle(0)
