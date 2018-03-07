@@ -5,16 +5,16 @@ import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(17, GPIO.OUT) #motor 1
-GPIO.setup(22, GPIO.OUT) #motor 2
-GPIO.setup(27, GPIO.OUT) #motor 3
-GPIO.setup(4, GPIO.OUT) #motor 4
+GPIO.setup(27, GPIO.OUT) #motor 2
+GPIO.setup(22, GPIO.OUT) #motor 3
+GPIO.setup(23, GPIO.OUT) #motor 4
 
 pygame.init()
 
-m1 = GPIO.PWM(22, 1000000)
-m2 = GPIO.PWM(17, 1000000)
-m3 = GPIO.PWM(27, 1000000)
-m4 = GPIO.PWM(4, 1000000)
+m1 = GPIO.PWM(17, 1000000)
+m2 = GPIO.PWM(27, 1000000)
+m3 = GPIO.PWM(22, 1000000)
+m4 = GPIO.PWM(23, 1000000)
 
 m1.start(0)
 m2.start(0)
