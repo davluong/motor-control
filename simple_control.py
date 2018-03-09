@@ -13,7 +13,7 @@ pygame.init()
 
 m1 = GPIO.PWM(17, 1000000)
 m2 = GPIO.PWM(27, 1000000)
-m3 = GPIO.PWM(22, 1000000)
+m3 = GPIO.PWM(24, 1000000)
 m4 = GPIO.PWM(23, 1000000)
 
 m1.start(0)
@@ -138,9 +138,9 @@ try:
                             back_motors_enabled = True
                             side_motors_enabled = False
 
-                    elif j.get_button(3):
+                    elif j.get_button(4):
                         print("L1 Pressed, now press R1")
-                        if j.get_button(4):
+                        if j.get_button(5):
                             print("Side Motors Control Enabled")
                             side_motors_enabled = True
                             back_motors_enabled = False
