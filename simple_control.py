@@ -6,15 +6,15 @@ import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(17, GPIO.OUT) #motor 1
 GPIO.setup(27, GPIO.OUT) #motor 2
-GPIO.setup(22, GPIO.OUT) #motor 3
-GPIO.setup(23, GPIO.OUT) #motor 4
+GPIO.setup(23, GPIO.OUT) #motor 3
+GPIO.setup(24, GPIO.OUT) #motor 4
 
 pygame.init()
 
-m1 = GPIO.PWM(17, 1000000)
-m2 = GPIO.PWM(27, 1000000)
-m3 = GPIO.PWM(24, 1000000)
-m4 = GPIO.PWM(23, 1000000)
+m1 = GPIO.PWM(17, 1000)
+m2 = GPIO.PWM(27, 1000)
+m3 = GPIO.PWM(23, 1000)
+m4 = GPIO.PWM(24, 1000)
 
 m1.start(0)
 m2.start(0)
@@ -34,6 +34,8 @@ s3 = 0
 s4 = 0
 val_1 = 0
 val_2 = 0
+val_1_s = 0
+val_2_s = 0
 back_motors_enabled = False
 side_motors_enabled = False
 
@@ -47,7 +49,7 @@ try:
 
         if j.get_axis(0) > 0.8 and abs(j.get_axis(1)) < 0.3:
             left_dir = "East"
-            val_1 = 100 #turning right
+            val_1 = 10 #turning right
         elif j.get_axis(0) > 0.3 and j.get_axis(1) > 0.3:
             left_dir = "Southeast"
             val_1 = 0 
@@ -59,23 +61,23 @@ try:
             val_1 = 0
         elif j.get_axis(0) < -0.8 and abs(j.get_axis(1)) < 0.3:
             left_dir = "West"
-            val_1 = 20 #turning left
+            val_1 = 10 #turning left
         elif j.get_axis(0) < -0.3 and j.get_axis(1) < -0.3:
             left_dir = "Northwest"
-            val_1 = 51
+            val_1 = 10
         elif abs(j.get_axis(0)) < 0.3 and j.get_axis(1) < -0.8:
             left_dir = "North"
-            val_1 = 100
+            val_1 = 10
         elif abs(j.get_axis(0)) > 0.3 and j.get_axis(1) < -0.3:
             left_dir = "Northeast"
-            val_1 = 100
+            val_1 = 10
         else:
             left_dir = 'Deadzone'
             val_1 = 0
 
         if j.get_axis(2) > 0.8 and abs(j.get_axis(5)) < 0.3:
             r_dir = "East"
-            val_2 = 20 #turning right
+            val_2 = 10 #turning right
         elif j.get_axis(2) > 0.3 and j.get_axis(5) > 0.3:
             r_dir = "Southeast"
             val_2 = 0 
@@ -87,16 +89,16 @@ try:
             val_2 = 0
         elif j.get_axis(2) < -0.8 and abs(j.get_axis(5)) < 0.3:
             r_dir = "West"
-            val_2 = 100 #turning left
+            val_2 = 10 #turning left
         elif j.get_axis(2) < -0.3 and j.get_axis(5) < -0.3:
             r_dir = "Northwest"
-            val_2 = 100
+            val_2 = 10
         elif abs(j.get_axis(2)) < 0.3 and j.get_axis(5) < -0.8:
             r_dir = "North"
-            val_2 = 100
+            val_2 = 10
         elif abs(j.get_axis(2)) > 0.3 and j.get_axis(5) < -0.3:
             r_dir = "Northeast"
-            val_2 = 50
+            val_2 = 10
         else:
             r_dir = 'Deadzone'
             val_2 = 0
@@ -106,26 +108,43 @@ try:
         if back_motors_enabled == True:
             s3 = 51
             s4 = 51
-            m3.ChangeDutyCycle(0) #allows balloon to hover
-            m4.ChangeDutyCycle(0)
+            m3.ChangeDutyCycle(20) #allows balloon to hover
+            m4.ChangeDutyCycle(20)
+            if left_dir == "North" or left_dir == "East" or left_dir == "Northeast":
+                if val_1 == 50:
+                    val_1 -= 10
+                val_1 += 10
+            if r_dir == "North" or r_dir == "West" or r_dir == "Northwest":
+                if val_2 == 50:
+                    val_2 -= 10
+                val_2 += 10
             m1.ChangeDutyCycle(val_1)
+            time.sleep(0.5)
             m2.ChangeDutyCycle(val_2)
             s1 = val_1
             s2 = val_2
 
         if side_motors_enabled == True:
+            val_1_s = val_1
+            val_2_s = val_2
             s1 = 0
             s2 = 0
             m1.ChangeDutyCycle(0)
             m2.ChangeDutyCycle(0)
             #use only the left analog stick for this
-            if val_1 <= 0:
-                val_1 += 20
-            if val_1 >= 100:
-                val_1 = 90
-            m3.ChangeDutyCycle(val_1)
-            m4.ChangeDutyCycle(val_1)
-            s3 = val_1
+            if left_dir == "North":
+                val_1_s = 90
+            elif left_dir == "Northwest" or left_dir == "Northeast":
+                val_1_s = 70
+            elif left_dir == "East" or left_dir == "West":
+                val_1_s = 50
+            else: 
+                val_1_s = 10
+                
+            m3.ChangeDutyCycle(val_1_s)
+            time.sleep(0.2)
+            m4.ChangeDutyCycle(val_1_s)
+            s3 = val_1_s
             s4 = s3
         
         for event in events:
@@ -153,8 +172,8 @@ try:
                         print('Entering Hover Mode...')
                         m1.ChangeDutyCycle(0)
                         m2.ChangeDutyCycle(0)
-                        m3.ChangeDutyCycle(51)
-                        m4.ChangeDutyCycle(51) #hovers with motors 3+4 at 50% duty cycle
+                        m3.ChangeDutyCycle(50)
+                        m4.ChangeDutyCycle(50) #hovers with motors 3+4 at 50% duty cycle
 
                         s1 = 0
                         s2 = 0
@@ -165,7 +184,7 @@ try:
                         print('Disengaging...')
 
                       
-        print('Motor Speeds: M1 = %s%%, M2 = %s%%, M3 = %s%%, M4 = %s%%' % (s1, s2, s3, s4))
+        #print('Motor Speeds: M1 = %s%%, M2 = %s%%, M3 = %s%%, M4 = %s%%' % (s1, s2, s3, s4))
             #logic check
 
         if s1 >= 100 and s2 >= 100:
@@ -186,7 +205,7 @@ try:
 
         print('The balloon %s and %s.' % (dir1, dir2))
 
-        time.sleep(1)
+        time.sleep(0.5)
 
 except KeyboardInterrupt:
     print("EXITING NOW")
